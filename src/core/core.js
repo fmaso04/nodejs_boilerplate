@@ -36,9 +36,9 @@ exports.start = () => {
       '======================================', consoleColors.Reset, '\n')
     console.log(consoleColors.FgYellow, 'Version:         ', consoleColors.FgGreen, packageJson.version, consoleColors.Reset)
     console.log(consoleColors.FgYellow, 'Environment:     ', consoleColors.FgGreen, config.environment, consoleColors.Reset)
-    console.log(consoleColors.FgYellow, `API:               ${config.server.protocol}://${config.server.hostname}:${config.server.port}`, consoleColors.Reset)
+    console.log(consoleColors.FgYellow, `API:               ${config.server.protocol}://${config.server.externalUrl}`, consoleColors.Reset)
     if (config.swagger.active) {
-      console.log(consoleColors.FgYellow, `API documentation: ${config.server.protocol}://${config.server.hostname}:${config.server.port}/${config.swagger.url}`, consoleColors.Reset)
+      console.log(consoleColors.FgYellow, `API documentation: ${config.server.protocol}://${config.server.externalUrl}/${config.swagger.url}`, consoleColors.Reset)
     }
     console.log('')
   })
