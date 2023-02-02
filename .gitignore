@@ -102,3 +102,20 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Editor
+.vscode
+.idea
+
+# Prisma 
+prisma/migrations/
+
+# Swagger
+swagger/swagger-output.json
+
+# Uploads
+temp/
+public/uploads/
+
+# Others
+package-lock.json

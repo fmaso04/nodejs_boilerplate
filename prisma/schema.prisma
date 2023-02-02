@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//  id            Int         @id @default(autoincrement())
+
+model User {
+  id            String      @id @default(uuid())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @updatedAt
+  email         String      @unique
+  password      String
+  name          String?
+  username      String      @unique
+  conditions    Boolean?
+  newsletter    Boolean?
+  bio           String?    @db.VarChar(1000)
+  phone         String?
+  avatar        String?
+  birthday      DateTime?
+  address       String?
+  city          String?
+  country       String?
+  postalCode    String?
+  role          Role?       @relation("userRole", fields: [roleId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  roleId        String?
+  tokens        Token[]     @relation("userToken")
+}
+
+model Token {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime? @updatedAt
+  lastUsed      DateTime?
+  token         String   @unique @db.VarChar(300)
+  expiration    DateTime
+  name          String?
+  user          User     @relation("userToken", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId        String
+  active        Boolean  @default(true)
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime? @updatedAt
+  name      String   @unique
+  users     User[]   @relation("userRole")
+  priorityOrder     Int
+}
