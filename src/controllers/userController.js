@@ -5,10 +5,10 @@ const { avatarValidator, userValidator, userValidatorUpdate } = require('../vali
 
 const getAll = async (req, res) => {
   /*
-    *   #swagger.tags = ['User']
-    *   #swagger.description = 'User get petition'
-    *   #swagger.security = [{ "apiKeyAuth": [] }]
-    */
+  *   #swagger.tags = ['User']
+  *   #swagger.description = 'User get petition'
+  *   #swagger.security = [{ "apiKeyAuth": [] }]
+  */
 
   const { result, error } = await userModel.getAll()
   if (error) return res.status(500).json({ data: null, error })
@@ -18,10 +18,10 @@ const getAll = async (req, res) => {
 
 const get = async (req, res) => {
   /*
-    *   #swagger.tags = ['User']
-    *   #swagger.description = 'User get by id'
-    *   #swagger.parameters['id'] = { in: 'path', description: 'User id', required: true, type: 'integer' }
-    */
+  *   #swagger.tags = ['User']
+  *   #swagger.description = 'User get by id'
+  *   #swagger.parameters['id'] = { in: 'path', description: 'User id', required: true, type: 'integer' }
+  */
 
   const { result, error } = await userModel.get(req.params.id)
   if (error) return res.status(500).json({ data: null, error })
@@ -31,23 +31,23 @@ const get = async (req, res) => {
 
 const create = async (req, res) => {
   /*
-    *   #swagger.tags = ['User']
-    *   #swagger.description = 'Create a user'
-    *   #swagger.consumes = ['application/x-www-form-urlencoded']
-    *   #swagger.parameters['email'] = { in: 'formData', description: 'Email of the user', required: true, default: 'fm@ferranmaso.com' }
-    *   #swagger.parameters['password'] = { in: 'formData', description: 'Password of the user', required: true, type: 'string', format: 'password', default: '12341234' }
-    *   #swagger.parameters['username'] = { in: 'formData', description: 'Nickname of the user', required: true, default: 'fmaso' }
-    *   #swagger.parameters['newsletter'] = { in: 'formData', description: 'Subscription to the newsletter', required: true, type: 'boolean', default: true }
-    *   #swagger.parameters['conditions'] = { in: 'formData', description: 'Accept the conditions, should be true', required: true, type: 'boolean', default: true }
-    *   #swagger.parameters['name'] = { in: 'formData', description: 'Name of the user', default: 'Ferran Masó' }
-    *   #swagger.parameters['bio'] = { in: 'formData', description: 'Biography of the user', default: 'This is my bio' }
-    *   #swagger.parameters['phone'] = { in: 'formData', description: 'Phone of the user', default: '666666666' }
-    *   #swagger.parameters['address'] = { in: 'formData', description: 'Address of the user', default: 'Carrer de la Pau, 1' }
-    *   #swagger.parameters['city'] = { in: 'formData', description: 'City of the user', default: 'Barcelona' }
-    *   #swagger.parameters['country'] = { in: 'formData', description: 'Country of the user', default: 'Spain' }
-    *   #swagger.parameters['postalCode'] = { in: 'formData', description: 'Postal code of the user', default: '08001' }
-    *   #swagger.parameters['birthday'] = { in: 'formData', description: 'Birthday', format: 'date', default: '1991-05-31' }
-    */
+  *   #swagger.tags = ['User']
+  *   #swagger.description = 'Create a user'
+  *   #swagger.consumes = ['application/x-www-form-urlencoded']
+  *   #swagger.parameters['email'] = { in: 'formData', description: 'Email of the user', required: true, default: 'fm@ferranmaso.com' }
+  *   #swagger.parameters['password'] = { in: 'formData', description: 'Password of the user', required: true, type: 'string', format: 'password', default: '12341234' }
+  *   #swagger.parameters['username'] = { in: 'formData', description: 'Nickname of the user', required: true, default: 'fmaso' }
+  *   #swagger.parameters['newsletter'] = { in: 'formData', description: 'Subscription to the newsletter', required: true, type: 'boolean', default: true }
+  *   #swagger.parameters['conditions'] = { in: 'formData', description: 'Accept the conditions, should be true', required: true, type: 'boolean', default: true }
+  *   #swagger.parameters['name'] = { in: 'formData', description: 'Name of the user', default: 'Ferran Masó' }
+  *   #swagger.parameters['bio'] = { in: 'formData', description: 'Biography of the user', default: 'This is my bio' }
+  *   #swagger.parameters['phone'] = { in: 'formData', description: 'Phone of the user', default: '666666666' }
+  *   #swagger.parameters['address'] = { in: 'formData', description: 'Address of the user', default: 'Carrer de la Pau, 1' }
+  *   #swagger.parameters['city'] = { in: 'formData', description: 'City of the user', default: 'Barcelona' }
+  *   #swagger.parameters['country'] = { in: 'formData', description: 'Country of the user', default: 'Spain' }
+  *   #swagger.parameters['postalCode'] = { in: 'formData', description: 'Postal code of the user', default: '08001' }
+  *   #swagger.parameters['birthday'] = { in: 'formData', description: 'Birthday', format: 'date', default: '1991-05-31' }
+  */
 
   const data = req.body || {}
   const { dataParsed, validationErrors } = await validateParams(data, userValidator)
@@ -78,7 +78,7 @@ const createWithAvatar = async (req, res) => {
   *   #swagger.parameters['country'] = { in: 'formData', description: 'Country of the user', default: 'Spain' }
   *   #swagger.parameters['postalCode'] = { in: 'formData', description: 'Postal code of the user', default: '08001' }
   *   #swagger.parameters['birthday'] = { in: 'formData', description: 'Birthday', format: 'date', default: '1991-05-31' }
-  *  #swagger.parameters['avatar'] = { in: 'formData', description: 'Avatar of the user', type: 'file' }
+  *   #swagger.parameters['avatar'] = { in: 'formData', description: 'Avatar of the user', type: 'file' }
   */
 
   const data = req.body || {}
@@ -98,21 +98,20 @@ const createWithAvatar = async (req, res) => {
 
 const update = async (req, res) => {
   /*
-    *   #swagger.tags = ['User']
-    *   #swagger.description = 'Update a user'
-    *   #swagger.consumes = ['application/x-www-form-urlencoded']
-    *   #swagger.parameters['newsletter'] = { in: 'formData', description: 'Subscription to the newsletter', required: true, type: 'boolean', default: true }
-    *   #swagger.parameters['conditions'] = { in: 'formData', description: 'Accept the conditions, should be true', required: true, type: 'boolean', default: true }
-    *   #swagger.parameters['name'] = { in: 'formData', description: 'Name of the user', default: 'Ferran Masó' }
-    *   #swagger.parameters['bio'] = { in: 'formData', description: 'Biography of the user', default: 'This is my bio' }
-    *   #swagger.parameters['phone'] = { in: 'formData', description: 'Phone of the user', default: '666666666' }
-    *   #swagger.parameters['address'] = { in: 'formData', description: 'Address of the user', default: 'Carrer de la Pau, 1' }
-    *   #swagger.parameters['city'] = { in: 'formData', description: 'City of the user', default: 'Barcelona' }
-    *   #swagger.parameters['country'] = { in: 'formData', description: 'Country of the user', default: 'Spain' }
-    *   #swagger.parameters['postalCode'] = { in: 'formData', description: 'Postal code of the user', default: '08001' }
-    *   #swagger.parameters['birthday'] = { in: 'formData', description: 'Birthday', format: 'date', default: '1991-05-31' }
-    *
-    */
+  *   #swagger.tags = ['User']
+  *   #swagger.description = 'Update a user'
+  *   #swagger.consumes = ['application/x-www-form-urlencoded']
+  *   #swagger.parameters['newsletter'] = { in: 'formData', description: 'Subscription to the newsletter', required: true, type: 'boolean', default: true }
+  *   #swagger.parameters['conditions'] = { in: 'formData', description: 'Accept the conditions, should be true', required: true, type: 'boolean', default: true }
+  *   #swagger.parameters['name'] = { in: 'formData', description: 'Name of the user', default: 'Ferran Masó' }
+  *   #swagger.parameters['bio'] = { in: 'formData', description: 'Biography of the user', default: 'This is my bio' }
+  *   #swagger.parameters['phone'] = { in: 'formData', description: 'Phone of the user', default: '666666666' }
+  *   #swagger.parameters['address'] = { in: 'formData', description: 'Address of the user', default: 'Carrer de la Pau, 1' }
+  *   #swagger.parameters['city'] = { in: 'formData', description: 'City of the user', default: 'Barcelona' }
+  *   #swagger.parameters['country'] = { in: 'formData', description: 'Country of the user', default: 'Spain' }
+  *   #swagger.parameters['postalCode'] = { in: 'formData', description: 'Postal code of the user', default: '08001' }
+  *   #swagger.parameters['birthday'] = { in: 'formData', description: 'Birthday', format: 'date', default: '1991-05-31' }
+  */
 
   const data = req.body || {}
   data.id = req.params.id || null
@@ -120,7 +119,9 @@ const update = async (req, res) => {
   const { dataParsed, validationErrors } = await validateParams(data, userValidatorUpdate)
   if (validationErrors) return res.status(400).json({ data: null, error: validationErrors })
 
-  const { result, error } = await userModel.update(dataParsed.id, dataParsed)
+  delete data.id
+
+  const { result, error } = await userModel.update(req.params.id, dataParsed)
   if (error) return res.status(500).json({ data: null, error })
 
   res.setHeader('Content-Type', 'application/json')
@@ -142,7 +143,9 @@ const updateAvatar = async (req, res) => {
   const { file, fileErrors } = await validateFile(req.file, avatarValidator)
   if (fileErrors && Object.keys(fileErrors).length > 0) return res.status(400).json({ data: null, error: fileErrors })
 
-  const { result, error } = await userModel.updateAvatar(data.id, file)
+  delete data.id
+
+  const { result, error } = await userModel.updateAvatar(req.params.id, file)
   if (error) return res.status(500).json({ data: null, error })
 
   res.setHeader('Content-Type', 'application/json')
@@ -151,11 +154,11 @@ const updateAvatar = async (req, res) => {
 
 const remove = async (req, res) => {
   /*
-    *   #swagger.tags = ['User']
-    *   #swagger.description = 'Delete a user'
-    *   #swagger.parameters['id'] = { in: 'path', description: 'ID of the user', required: true, type: 'string' }
-    *
-    */
+  *   #swagger.tags = ['User']
+  *   #swagger.description = 'Delete a user'
+  *   #swagger.parameters['id'] = { in: 'path', description: 'ID of the user', required: true, type: 'string' }
+  *
+  */
 
   const id = req.params.id || null
   if (!id) return res.status(400).json({ data: null, error: 'Missing id' })

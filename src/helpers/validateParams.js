@@ -3,8 +3,8 @@ const parse = ['boolean', 'numeric', 'integer', 'date']
 
 const validateParams = async (params, validators) => {
   parseRegisters(validators)
-  parseParams(params, validators)
-  const validation = new Validator(params, validators)
+  const parsedParams = parseParams(params, validators)
+  const validation = new Validator(parsedParams, validators)
   const result = await new Promise((resolve) => {
     validation.checkAsync(
       () => { resolve(true) },
@@ -13,7 +13,7 @@ const validateParams = async (params, validators) => {
   })
 
   if (!result) { return { dataParsed: null, validationErrors: await validation.errors.all() } }
-  return { dataParsed: params, validationErrors: null }
+  return { dataParsed: parsedParams, validationErrors: null }
 }
 
 const parseRegisters = (validators) => {
@@ -34,14 +34,15 @@ const parseRegisters = (validators) => {
 }
 
 const parseParams = (params, validators) => {
+  const parsedParams = {}
   for (const index in params) {
     const rule = validators[index]
-    if (!rule) break
-    const parseRule = parse.find((item) => rule.includes(item))
-    if (parseRule) {
-      params[index] = parseValue(params[index], parseRule)
+    if (rule) {
+      const parseRule = parse.find((item) => rule.includes(item))
+      parsedParams[index] = parseValue(params[index], parseRule)
     }
   }
+  return parsedParams
 }
 
 const parseValue = (value, type) => {
@@ -53,7 +54,7 @@ const parseValue = (value, type) => {
     case 'date':
       return new Date(value)
     default:
-      return value
+      return value + ''
   }
 }
 
