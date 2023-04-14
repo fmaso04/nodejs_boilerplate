@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const tokenModel = require('../models/tokenModel')
+const tokenModel = require('../modules/user/token/tokenModel')
 const moment = require('moment')
 const tokenConfig = require('../../config/config').token
 

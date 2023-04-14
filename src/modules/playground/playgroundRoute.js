@@ -1,7 +1,9 @@
-const PlaygroundController = require('../controllers/playgroundController')
 const express = require('express')
-const router = express.Router()
 const multer = require('multer')
+
+const PlaygroundController = require('./playgroundController')
+
+const router = express.Router()
 const upload = multer({ dest: './temp' })
 
 router.get('/test-get', PlaygroundController.get)

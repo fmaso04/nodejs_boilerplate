@@ -7,7 +7,7 @@ const bodyParser = require('body-parser')
 const { corsProtection } = require('./corsProtection')
 
 /* Routes */
-const router = require('../routes/00routes')
+const router = require('../routes/routes')
 const consoleColors = require('../const/consoleColors')
 
 exports.start = () => {

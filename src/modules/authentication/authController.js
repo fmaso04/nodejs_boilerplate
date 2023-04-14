@@ -1,10 +1,11 @@
-const userModel = require('../models/userModel')
-const tokenModel = require('../models/tokenModel')
-const validateParams = require('../helpers/validateParams')
 const moment = require('moment/moment')
-const tokenConfig = require('../../config/config').token
-const createToken = require('../helpers/functions').createToken
-const { userValidator } = require('../validators/userValidator')
+
+const userModel = require('../user/userModel')
+const tokenModel = require('../user/token/tokenModel')
+const validateParams = require('../../helpers/validateParams')
+const tokenConfig = require('../../../config/config').token
+const createToken = require('../../helpers/functions').createToken
+const { userValidator } = require('../user/userValidator')
 
 const login = async (req, res) => {
   /*

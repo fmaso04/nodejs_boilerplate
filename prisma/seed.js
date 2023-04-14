@@ -33,7 +33,30 @@ const seedUsers = async () => {
   console.log('Users seeded: ', res)
 }
 
+const seedModules = async () => {
+  console.log('Seeding modules...')
+  const res = await prisma.module.createMany({
+    data: [
+      {
+        name: 'Security'
+      },
+      {
+        name: 'User'
+      },
+      {
+        name: 'Playground'
+      },
+      {
+        name: 'Dashboard'
+      }
+    ]
+  })
+  if (!res) console.error('Error seeding users', res)
+  console.log('Modules seeded: ', res)
+}
+
 (async function () {
   await seedRoles()
   await seedUsers()
+  await seedModules()
 }())

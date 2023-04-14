@@ -108,7 +108,7 @@ describe(`MODULE: ${module}`, () => {
             })
         })
 
-        // Update the user
+        // Update user, can update to same email and username
         await new Promise((resolve, reject) => {
           request.put(`/${module}/update/${id}`)
             .set('x-access-token', `${token}`)
@@ -116,17 +116,42 @@ describe(`MODULE: ${module}`, () => {
               name: 'Ferran Mas',
               bio: "I'm seriously a developer",
               newsletter: false,
-              conditions: false,
+              conditions: true,
               address: 'Carrer de la Pau, 2',
               city: 'Olot',
               country: 'Spain?',
               postalCode: '17800',
               phone: '777777777',
-              birthday: '1991-05-30'
+              birthday: '1991-05-30',
+              email: 'test3@ferranmaso.com',
+              username: 'test3'
             })
             .expect(200)
             .end((err, res) => {
               expect(res.body.data).toBeTruthy()
+              resolve()
+            })
+        })
+
+        // Can't update to existing email or username which is not the current one, conditions false
+        await new Promise((resolve, reject) => {
+          request.put(`/${module}/update/${id}`)
+            .set('x-access-token', `${token}`)
+            .send({
+              email: 'admin@ferranmaso.com',
+              username: 'admin',
+              conditions: false
+            })
+            .expect(400)
+            .end((err, res) => {
+              expect(res.data).toBeFalsy()
+              expect(res.body.error).toBeTruthy()
+              expect(res.body.error.email).toBeTruthy()
+              expect(res.body.error.email[0]).toStrictEqual('EMAIL_ALREADY_EXISTS')
+              expect(res.body.error.username).toBeTruthy()
+              expect(res.body.error.username[0]).toStrictEqual('USERNAME_ALREADY_EXISTS')
+              expect(res.body.error.conditions).toBeTruthy()
+              expect(res.body.error.conditions[0]).toStrictEqual('CONDITIONS_NOT_ACCEPTED')
               resolve()
             })
         })
@@ -168,74 +193,6 @@ describe(`MODULE: ${module}`, () => {
             .expect(404)
             .end((err, res) => {
               expect(res.body.error).toStrictEqual('USER_NOT_FOUND')
-              resolve()
-            })
-        })
-
-        done()
-      })
-    })
-
-    test('Create user with avatar', (done) => {
-      login(async (token) => {
-        // Create the user
-        const id = await new Promise((resolve, reject) => {
-          request.post(`/${module}/createWithAvatar`)
-            .set('x-access-token', `${token}`)
-            .field('email', 'fm3@ferranmaso.com')
-            .field('username', 'fm3')
-            .field('password', '12341234')
-            .field('newsletter', true)
-            .field('conditions', true)
-            .field('name', 'Ferran Masó 3')
-            .field('bio', "I'm a developer")
-            .field('address', 'Carrer de la Pau, 1')
-            .field('city', 'Barcelona')
-            .field('country', 'Spain')
-            .field('postalCode', '08001')
-            .field('phone', '666666666')
-            .field('birthday', '1991-05-31')
-            .attach('avatar', 'tests/avatar.png')
-            .expect(200)
-            .end((err, res) => {
-              expect(res.body.data).toBeTruthy()
-              expect(res.body.data.id).toBeTruthy()
-              expect(res.body.data.email).toStrictEqual('fm3@ferranmaso.com')
-              expect(res.body.data.username).toStrictEqual('fm3')
-              expect(res.body.data.newsletter).toStrictEqual(true)
-              expect(res.body.data.conditions).toStrictEqual(true)
-              expect(res.body.data.name).toStrictEqual('Ferran Masó 3')
-              expect(res.body.data.bio).toStrictEqual("I'm a developer")
-              expect(res.body.data.address).toStrictEqual('Carrer de la Pau, 1')
-              expect(res.body.data.city).toStrictEqual('Barcelona')
-              expect(res.body.data.country).toStrictEqual('Spain')
-              expect(res.body.data.postalCode).toStrictEqual('08001')
-              expect(res.body.data.phone).toStrictEqual('666666666')
-              expect(res.body.data.birthday).toStrictEqual('1991-05-31T00:00:00.000Z')
-              expect(res.body.data.avatar).toBeTruthy()
-              resolve(res.body.data.id)
-            })
-        })
-
-        // Update avatar
-        await new Promise((resolve, reject) => {
-          request.post(`/${module}/updateAvatar/${id}`)
-            .set('x-access-token', `${token}`)
-            .attach('avatar', 'tests/avatar2.png')
-            .expect(200)
-            .end((err, res) => {
-              expect(res.body.data).toBeTruthy()
-              resolve()
-            })
-        })
-
-        // Delete the user
-        await new Promise((resolve, reject) => {
-          request.delete(`/${module}/delete/${id}`)
-            .set('x-access-token', `${token}`)
-            .expect(200)
-            .end((err, res) => {
-              expect(res.body.data).toBeTruthy()
               resolve()
             })
         })

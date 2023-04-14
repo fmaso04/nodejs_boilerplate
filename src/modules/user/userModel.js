@@ -1,26 +1,30 @@
 const { PrismaClient } = require('@prisma/client')
 const bcrypt = require('bcrypt')
 const prisma = new PrismaClient()
-const { saveFile, deleteFile } = require('../helpers/fileManager')
+const { saveFile, deleteFile } = require('../../helpers/fileManager')
 
 const getAll = async () => {
-  const users = await prisma.user.findMany()
-  delete users.password
-  return { result: users, error: null }
+  try {
+    const users = await prisma.user.findMany()
+    delete users.password
+    return { result: users, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_GETTING_USERS' }
+  }
 }
 
 const get = async (id) => {
   try {
     const user = await prisma.user.findUnique({
-      where: {
-        id
-      }
+      where: { id }
     })
+    if (!user) return { result: null, error: 'USER_NOT_FOUND' }
     delete user.password
     return { result: user, error: null }
   } catch (err) {
     console.error(err)
-    return { result: null, error: 'USER_NOT_FOUND' }
+    return { result: null, error: 'ERROR_GETTING_USER' }
   }
 }
 
@@ -58,9 +62,7 @@ const createWithAvatar = async (data, avatar) => {
 const update = async (id, data) => {
   try {
     const user = await prisma.user.update({
-      where: {
-        id
-      },
+      where: { id },
       data
     })
     if (!user) return { result: null, error: 'USER_NOT_UPDATED' }
@@ -75,9 +77,7 @@ const update = async (id, data) => {
 const updateAvatar = async (id, avatar) => {
   try {
     const user = await prisma.user.findUnique({
-      where: {
-        id
-      }
+      where: { id }
     })
 
     if (!user) return { result: null, error: 'USER_NOT_FOUND' }
@@ -106,9 +106,7 @@ const updateAvatar = async (id, avatar) => {
 const remove = async (id) => {
   try {
     const user = await prisma.user.delete({
-      where: {
-        id
-      }
+      where: { id }
     })
     if (!user) return { result: null, error: 'USER_NOT_DELETED' }
     delete user.password
@@ -121,9 +119,7 @@ const remove = async (id) => {
 
 const login = async (email, password) => {
   const user = await prisma.user.findUnique({
-    where: {
-      email
-    }
+    where: { email }
   })
   if (!user) return { result: null, error: 'EMAIL_NOT_FOUND' }
   const validPassword = await bcrypt.compare(password, user.password)
@@ -148,10 +144,10 @@ const getByParams = async (data) => {
 
 const existsUser = async (data) => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findMany({
       where: data
     })
-    if (!user) return { result: false, error: null }
+    if (!user || user.length === 0) return { result: false, error: null }
     return { result: true, error: null }
   } catch (err) {
     console.error(err)

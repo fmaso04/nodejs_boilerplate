@@ -1,7 +1,7 @@
-const userModel = require('../models/userModel')
-const validateParams = require('../helpers/validateParams')
-const validateFile = require('../helpers/validateFile')
-const { avatarValidator, userValidator, userValidatorUpdate } = require('../validators/userValidator')
+const userModel = require('./userModel')
+const validateParams = require('../../helpers/validateParams')
+const validateFile = require('../../helpers/validateFile')
+const { avatarValidator, userValidator, userValidatorUpdate } = require('./userValidator')
 
 const getAll = async (req, res) => {
   /*
@@ -13,7 +13,7 @@ const getAll = async (req, res) => {
   const { result, error } = await userModel.getAll()
   if (error) return res.status(500).json({ data: null, error })
   res.setHeader('Content-Type', 'application/json')
-  res.status(200).json({ data: result, error: null })
+  return res.status(200).json({ data: result, error: null })
 }
 
 const get = async (req, res) => {
@@ -26,7 +26,7 @@ const get = async (req, res) => {
   const { result, error } = await userModel.get(req.params.id)
   if (error) return res.status(500).json({ data: null, error })
   res.setHeader('Content-Type', 'application/json')
-  res.status(200).json({ data: result, error: null })
+  return res.status(200).json({ data: result, error: null })
 }
 
 const create = async (req, res) => {

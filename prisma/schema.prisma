@@ -33,6 +33,7 @@ model User {
   role          Role?       @relation("userRole", fields: [roleId], references: [id], onDelete: SetNull, onUpdate: SetNull)
   roleId        String?
   tokens        Token[]     @relation("userToken")
+  permissions   UserPermission[] @relation("userUserPermission")
 }
 
 model Token {
@@ -49,10 +50,53 @@ model Token {
 }
 
 model Role {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime? @updatedAt
-  name      String   @unique
-  users     User[]   @relation("userRole")
-  priorityOrder     Int
+  id               String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime? @updatedAt
+  name              String   @unique
+  users             User[]   @relation("userRole")
+  priorityOrder     Int?
+  permissions       RolePermission[] @relation("permissionRolePermission")
+}
+
+model Permission {
+  id                String    @id @default(uuid())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
+  code              String    @unique
+  description       String?
+  module            Module    @relation("modulePermission", fields: [moduleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  moduleId          String
+  roles             RolePermission[] @relation("roleRolePermission")
+  users             UserPermission[] @relation("userPermission")
+}
+
+model RolePermission {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime? @updatedAt
+  role              Role    @relation("permissionRolePermission", fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  roleId            String
+  permission        Permission @relation("roleRolePermission", fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permissionId      String
+  allowed           Boolean
+}
+
+model Module {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime? @updatedAt
+  name              String   @unique
+  permissions       Permission[] @relation("modulePermission")
+}
+
+model UserPermission {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime? @updatedAt
+  user              User     @relation("userUserPermission", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId            String
+  permission        Permission @relation("userPermission", fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permissionId      String
+  allowed           Boolean
 }

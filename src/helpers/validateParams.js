@@ -2,7 +2,7 @@ const Validator = require('validatorjs')
 const parse = ['boolean', 'numeric', 'integer', 'date']
 
 const validateParams = async (params, validators) => {
-  parseRegisters(validators)
+  parseRegisters(validators, params)
   const parsedParams = parseParams(params, validators)
   const validation = new Validator(parsedParams, validators)
   const result = await new Promise((resolve) => {
@@ -16,18 +16,37 @@ const validateParams = async (params, validators) => {
   return { dataParsed: parsedParams, validationErrors: null }
 }
 
-const parseRegisters = (validators) => {
+const parseRegisters = (validators, params) => {
   if (!validators.registers) return validators
   for (const register of validators.registers) {
     if (register.field) {
       validators[register.field] += validators[register.field] ? '|' : ''
       validators[register.field] += register.name
-
-      Validator.registerAsync(register.name, function (data, attribute, req, passes) {
-        register.func(data).then((result) => {
-          passes(result)
+      const registerParams = register.params
+        ? register.params.map((param) => {
+          return { [param]: params[param] }
         })
-      }, register.message)
+        : {}
+      const registerFunc = (data, attribute, req, passes) => {
+        if (registerParams.length > 0) {
+          register.func(data, registerParams).then((result) => {
+            passes(result)
+          })
+        } else {
+          try {
+            register.func(data).then((result) => {
+              passes(result)
+            })
+          } catch (err) {
+            console.error(err)
+            console.error(`Error in register function ${register.name} in ${register.field} field`)
+            console.error(err, data)
+            passes(false)
+          }
+        }
+      }
+
+      Validator.registerAsync(register.name, registerFunc, register.message)
     }
   }
   delete validators.registers

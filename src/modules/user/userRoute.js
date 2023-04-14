@@ -1,9 +1,10 @@
 const express = require('express')
-const router = express.Router()
-const UserController = require('../controllers/userController')
-const auth = require('../middlewares/authMiddleware')
 const multer = require('multer')
 
+const auth = require('../../middlewares/authMiddleware')
+const UserController = require('./userController')
+
+const router = express.Router()
 const upload = multer({ dest: './temp/user' })
 
 router.route('/getAll').get(auth.authorization(['superuser', 'GetAll']), UserController.getAll)
