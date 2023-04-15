@@ -144,7 +144,6 @@ const getByParams = async (data) => {
 
 const existsUser = async (data) => {
   try {
-    console.log(JSON.stringify(data, null, 4))
     const user = await prisma.user.findMany({
       where: data
     })

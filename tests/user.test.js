@@ -110,7 +110,6 @@ describe(`MODULE: ${module}`, () => {
 
         // Update user, can update to same email and username
         await new Promise((resolve, reject) => {
-          console.log(id)
           request.put(`/${module}/update/${id}`)
             .set('x-access-token', `${token}`)
             .send({
@@ -129,7 +128,6 @@ describe(`MODULE: ${module}`, () => {
             })
             .expect(200)
             .end((err, res) => {
-              console.log(res.body)
               expect(res.body.data).toBeTruthy()
               resolve()
             })
