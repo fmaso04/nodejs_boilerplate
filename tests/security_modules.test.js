@@ -112,6 +112,7 @@ describe(`MODULE: ${module}`, () => {
             })
             .expect(200)
             .end((err, res) => {
+              console.log(res.body)
               expect(res.body.data).toBeTruthy()
               resolve()
             })

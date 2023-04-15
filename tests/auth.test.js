@@ -45,8 +45,8 @@ describe(`MODULE: ${module}`, () => {
         .end((err, res) => {
           expect(res.body.data).toBeFalsy()
           expect(res.body.error.password).toStrictEqual(['The password must be at least 8 characters.'])
-          expect(res.body.error.username).toStrictEqual(['Username already exists'])
-          expect(res.body.error.email).toStrictEqual(['Email already exists'])
+          expect(res.body.error.username).toStrictEqual(['USERNAME_ALREADY_EXISTS'])
+          expect(res.body.error.email).toStrictEqual(['EMAIL_ALREADY_EXISTS'])
           done()
         })
     })
@@ -160,8 +160,8 @@ describe(`MODULE: ${module}`, () => {
         .expect(400)
         .end((err, res) => {
           expect(res.body.data).toBeFalsy()
-          expect(res.body.error.username).toStrictEqual(['Username already exists'])
-          expect(res.body.error.email).toStrictEqual(['Email already exists'])
+          expect(res.body.error.username).toStrictEqual(['USERNAME_ALREADY_EXISTS'])
+          expect(res.body.error.email).toStrictEqual(['EMAIL_ALREADY_EXISTS'])
           expect(res.body.error.phone).toStrictEqual(['The phone may not be greater than 20 characters.'])
           expect(res.body.error.password).toStrictEqual(['The password must be at least 8 characters.'])
           expect(res.body.error.postalCode).toStrictEqual(['The postalCode may not be greater than 10 characters.'])

@@ -2,7 +2,7 @@ const Validator = require('validatorjs')
 const parse = ['boolean', 'numeric', 'integer', 'date']
 
 const validateParams = async (params, validators) => {
-  parseRegisters(validators, params)
+  parseRegisters(params, validators)
   const parsedParams = parseParams(params, validators)
   const validation = new Validator(parsedParams, validators)
   const result = await new Promise((resolve) => {
@@ -16,7 +16,7 @@ const validateParams = async (params, validators) => {
   return { dataParsed: parsedParams, validationErrors: null }
 }
 
-const parseRegisters = (validators, params) => {
+const parseRegisters = (params, validators) => {
   if (!validators.registers) return validators
   for (const register of validators.registers) {
     if (register.field) {
@@ -49,7 +49,6 @@ const parseRegisters = (validators, params) => {
       Validator.registerAsync(register.name, registerFunc, register.message)
     }
   }
-  delete validators.registers
 }
 
 const parseParams = (params, validators) => {
