@@ -11,7 +11,7 @@ const roleValidator = {
           return !data.result
         })
       },
-      message: 'Name already exists'
+      message: 'NAME_ALREADY_EXISTS'
     }
   ]
 }
@@ -28,7 +28,19 @@ const roleValidatorUpdate = {
           return data.result
         })
       },
-      message: 'Id not exists'
+      message: 'ID_NOT_EXISTS'
+    },
+    {
+      field: 'name',
+      name: 'name_available_or_same',
+      params: ['id'],
+      func: (name, params) => {
+        const id = params.find((item) => item.id).id
+        return roleModel.existsRole({ AND: [{ name }, { NOT: { id: { equals: id } } }] }).then((data) => {
+          return !data.result
+        })
+      },
+      message: 'NAME_ALREADY_EXISTS'
     }
   ]
 }

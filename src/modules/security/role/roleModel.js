@@ -2,37 +2,68 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 const getAll = async () => {
-  const roles = await prisma.role.findMany()
-  return { result: roles, error: null }
+  try {
+    const roles = await prisma.role.findMany()
+    return { result: roles, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_GETTING_ROLES' }
+  }
 }
 
 const get = async (id) => {
-  const role = await prisma.role.findUnique({
-    where: { id }
-  })
-  return { result: role, error: null }
+  try {
+    const role = await prisma.role.findUnique({
+      where: { id }
+    })
+    if (!role) return { result: null, error: 'ROLE_NOT_FOUND' }
+    return { result: role, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_GETTING_ROLE' }
+  }
 }
 
 const create = async (data) => {
-  const roleCreated = await prisma.role.create({
-    data
-  })
-  return { result: roleCreated, error: null }
+  try {
+    const role = await prisma.role.create({
+      data
+    })
+    if (!role) return { result: null, error: 'USER_NOT_CREATED' }
+
+    return { result: role, error: null }
+  } catch (error) {
+    console.error(error)
+    return { result: null, error: 'ERROR_CREATING_ROLE' }
+  }
 }
 
 const update = async (id, data) => {
-  const roleUpdated = await prisma.role.update({
-    where: { id },
-    data
-  })
-  return { result: roleUpdated, error: null }
+  try {
+    const roleUpdated = await prisma.role.update({
+      where: { id },
+      data
+    })
+    if (!roleUpdated) return { result: null, error: 'ROLE_NOT_UPDATED' }
+
+    return { result: roleUpdated, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_UPDATING_ROLE' }
+  }
 }
 
 const remove = async (id) => {
-  const roleDeleted = await prisma.role.delete({
-    where: { id }
-  })
-  return { result: roleDeleted, error: null }
+  try {
+    const role = await prisma.role.delete({
+      where: { id }
+    })
+    if (!role) return { result: null, error: 'ROLE_NOT_DELETED' }
+    return { result: role, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_DELETING_ROLE' }
+  }
 }
 
 const existsRole = async (data) => {

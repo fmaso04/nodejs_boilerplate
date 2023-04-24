@@ -50,7 +50,7 @@ model Token {
 }
 
 model Role {
-  id               String   @id @default(uuid())
+  id                String   @id @default(uuid())
   createdAt         DateTime @default(now())
   updatedAt         DateTime? @updatedAt
   name              String   @unique
