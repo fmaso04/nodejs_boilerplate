@@ -89,7 +89,7 @@ const remove = async (req, res) => {
   */
 
   const id = req.params.id || null
-  if (!id) return res.status(400).json({ data: null, error: 'Missing id' })
+  if (!id) return res.status(400).json({ data: null, error: 'MISSING_ID' })
 
   const { result, error } = await roleModel.remove(id)
   if (error) return res.status(500).json({ data: null, error })

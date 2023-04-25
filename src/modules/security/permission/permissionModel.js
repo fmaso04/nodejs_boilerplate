@@ -2,35 +2,68 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 const getAll = async () => {
-  const permissions = await prisma.permission.findMany()
-  return { result: permissions, error: null }
+  try {
+    const permissions = await prisma.permission.findMany()
+    return { result: permissions, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_GETTING_PERMISSIONS' }
+  }
 }
 
 const get = async (id) => {
-  const permission = await prisma.permission.findUnique({
-    where: { id }
-  })
-  return { result: permission, error: null }
+  try {
+    const permission = await prisma.permission.findUnique({
+      where: { id }
+    })
+    if (!permission) return { result: null, error: 'PERMISSION_NOT_FOUND' }
+    return { result: permission, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_GETTING_PERMISSION' }
+  }
 }
 
 const create = async (data) => {
-  const permissionCreated = await prisma.permission.create({ data })
-  return { result: permissionCreated, error: null }
+  try {
+    const permission = await prisma.permission.create({
+      data
+    })
+    if (!permission) return { result: null, error: 'PERMISSION_NOT_CREATED' }
+
+    return { result: permission, error: null }
+  } catch (error) {
+    console.error(error)
+    return { result: null, error: 'ERROR_CREATING_PERMISSION' }
+  }
 }
 
 const update = async (id, data) => {
-  const permissionUpdated = await prisma.permission.update({
-    where: { id },
-    data
-  })
-  return { result: permissionUpdated, error: null }
+  try {
+    const permissionUpdated = await prisma.permission.update({
+      where: { id },
+      data
+    })
+    if (!permissionUpdated) return { result: null, error: 'PERMISSION_NOT_UPDATED' }
+
+    return { result: permissionUpdated, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_UPDATING_PERMISSION' }
+  }
 }
 
 const remove = async (id) => {
-  const permissionDeleted = await prisma.permission.delete({
-    where: { id }
-  })
-  return { result: permissionDeleted, error: null }
+  try {
+    const permissionDeleted = await prisma.permission.delete({
+      where: { id }
+    })
+    if (!permissionDeleted) return { result: null, error: 'PERMISSION_NOT_DELETED' }
+    return { result: permissionDeleted, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_DELETING_PERMISSION' }
+  }
 }
 
 const existsPermission = async (data) => {

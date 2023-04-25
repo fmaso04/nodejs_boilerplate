@@ -29,7 +29,7 @@ const create = async (data) => {
     const module = await prisma.module.create({
       data
     })
-    if (!module) return { result: null, error: 'USER_NOT_CREATED' }
+    if (!module) return { result: null, error: 'MODULE_NOT_CREATED' }
 
     return { result: module, error: null }
   } catch (error) {

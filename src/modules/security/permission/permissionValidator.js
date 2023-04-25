@@ -14,7 +14,7 @@ const permissionValidator = {
           return !data.result
         })
       },
-      message: 'Code already exists'
+      message: 'CODE_ALREADY_EXISTS'
     },
     {
       field: 'moduleId',
@@ -24,7 +24,7 @@ const permissionValidator = {
           return data.result
         })
       },
-      message: 'Id module not exists'
+      message: 'ID_MODULE_NOT_EXISTS'
     }
   ]
 }
