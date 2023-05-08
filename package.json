@@ -19,10 +19,11 @@
     "tests": "jest",
     "tests-clean": "npx prisma migrate dev --name init && node prisma/seed.js && jest --maxWorkers 1",
     "build-db": "npx prisma migrate dev --name init",
-    "seed-db": "node prisma/seed.js"
+    "seed-db": "node prisma/seed.js",
+    "build-seed-db": "npx prisma migrate dev --name init && node prisma/seed.js"
   },
   "dependencies": {
-    "@prisma/client": "^4.7.1",
+    "@prisma/client": "^4.13.0",
     "bcrypt": "^5.1.0",
     "body-parser": "^1.20.1",
     "cors": "^2.8.5",
@@ -47,7 +48,7 @@
     "eslint-plugin-promise": "^6.1.1",
     "jest": "^29.3.1",
     "lint": "^0.8.19",
-    "prisma": "^4.7.1",
+    "prisma": "^4.13.0",
     "supertest": "^6.3.3"
   }
 }

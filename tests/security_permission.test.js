@@ -35,7 +35,7 @@ describe(`PERMISSION: ${module}`, () => {
           .expect(200)
           .end((err, res) => {
             expect(res.body.data).toBeTruthy()
-            // expect(res.body.data.length).toBeGreaterThan(0)
+            expect(res.body.data.length).toBeGreaterThan(0)
             done()
           })
       })
@@ -122,7 +122,6 @@ describe(`PERMISSION: ${module}`, () => {
             })
             .expect(200)
             .end((err, res) => {
-              console.log(err, res)
               expect(res.body.data).toBeTruthy()
               resolve()
             })

@@ -29,7 +29,7 @@ const create = async (data) => {
     const role = await prisma.role.create({
       data
     })
-    if (!role) return { result: null, error: 'USER_NOT_CREATED' }
+    if (!role) return { result: null, error: 'ROLE_NOT_CREATED' }
 
     return { result: role, error: null }
   } catch (error) {

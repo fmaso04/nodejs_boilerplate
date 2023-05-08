@@ -22,7 +22,7 @@ const roleValidatorUpdate = {
   registers: [
     {
       field: 'id',
-      name: 'id_available',
+      name: 'id_exists',
       func: (id) => {
         return roleModel.existsRole({ id }).then((data) => {
           return data.result

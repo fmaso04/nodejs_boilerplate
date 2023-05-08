@@ -79,11 +79,25 @@ const existsPermission = async (data) => {
   }
 }
 
+const getByCode = async (code) => {
+  try {
+    const permission = await prisma.permission.findUnique({
+      where: { code }
+    })
+    if (!permission) return { result: null, error: 'PERMISSION_NOT_FOUND' }
+    return { result: permission, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_GETTING_PERMISSION' }
+  }
+}
+
 module.exports = {
   getAll,
   get,
   create,
   update,
   remove,
-  existsPermission
+  existsPermission,
+  getByCode
 }

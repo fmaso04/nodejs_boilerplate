@@ -1,6 +1,8 @@
 const permissionModel = require('./permissionModel')
+const rolePermissionModel = require('./rolePermissionModel')
+const userPermissionModel = require('./userPermissionModel')
 const validateParams = require('../../../helpers/validateParams')
-const { permissionValidator, permissionValidatorUpdate } = require('./permissionValidator')
+const { permissionValidator, permissionValidatorUpdate, rolePermissionValidator, userPermissionValidator } = require('./permissionValidator')
 
 const getAll = async (req, res) => {
   /*
@@ -102,4 +104,98 @@ const remove = async (req, res) => {
   res.status(200).json({ data: result, error: null })
 }
 
-module.exports = { getAll, get, create, update, remove }
+const addPermissionToRole = async (req, res) => {
+  /*
+  *   #swagger.tags = ['Security - Permission']
+  *   #swagger.description = 'Add permission to role petition'
+  *   #swagger.security = [{ "apiKeyAuth": [] }]
+  *   #swagger.parameters['roleId'] = { in: 'path', description: 'Id of the role', required: true, type: 'string', default: '265edb78-4628-441a-91d2-7e3b02d4cae4' }
+  *   #swagger.parameters['permissionId'] = { in: 'path', description: 'Id of the permission', required: true, type: 'string', default: '5f9f9f9f9f9f9f9f9f9f9f9f' }
+  *   #swagger.parameters['allowed'] = { in: 'formData', description: 'Allowed to use permission: 0-Default, 1-Allowed, 2-Denied', type: 'int', default: 0, enum: [0, 1, 2] }
+  */
+
+  const data = req.body || {}
+  data.roleId = req.params.roleId || null
+  data.permissionId = req.params.permissionId || null
+
+  const { dataParsed, validationErrors } = await validateParams(data, rolePermissionValidator)
+  if (validationErrors) return res.status(400).json({ data: null, error: validationErrors })
+
+  const roleId = dataParsed.roleId || null
+  const permissionId = dataParsed.permissionId || null
+  delete dataParsed.roleId
+  delete dataParsed.permissionId
+
+  const { result, error } = await rolePermissionModel.createOrUpdate(roleId, permissionId, dataParsed)
+  if (error) return res.status(500).json({ data: null, error })
+
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: result, error: null })
+}
+
+const addPermissionToUser = async (req, res) => {
+  /*
+  *   #swagger.tags = ['Security - Permission']
+  *   #swagger.description = 'Add permission to user petition'
+  *   #swagger.security = [{ "apiKeyAuth": [] }]
+  *   #swagger.parameters['userId'] = { in: 'path', description: 'Id of the user', required: true, type: 'string', default: '5f9f9f9f9f9f9f9f9f9f9f9f' }
+  *   #swagger.parameters['permissionId'] = { in: 'path', description: 'Id of the permission', required: true, type: 'string', default: '439dbdea-7297-48c0-83c8-6a4f38e436b3' }
+  *   #swagger.parameters['allowed'] = { in: 'formData', description: 'Allowed to use permission', required: false, type: 'boolean', default: true
+  */
+
+  const data = req.body || {}
+  data.userId = req.params.userId || null
+  data.permissionId = req.params.permissionId || null
+
+  const { dataParsed, validationErrors } = await validateParams(data, userPermissionValidator)
+  if (validationErrors) return res.status(400).json({ data: null, error: validationErrors })
+
+  const userId = dataParsed.userId || null
+  const permissionId = dataParsed.permissionId || null
+  delete dataParsed.userId
+  delete dataParsed.permissionId
+
+  const { result, error } = await userPermissionModel.createOrUpdate(userId, permissionId, dataParsed)
+  if (error) return res.status(500).json({ data: null, error })
+
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: result, error: null })
+}
+
+const getPermissionsByRole = async (req, res) => {
+  /*
+  *   #swagger.tags = ['Security - Permission']
+  *   #swagger.description = 'Get permissions by role petition'
+  *  #swagger.security = [{ "apiKeyAuth": [] }]
+  *  #swagger.parameters['roleId'] = { in: 'path', description: 'Id of the role', required: true, type: 'string', default: '265edb78-4628-441a-91d2-7e3b02d4cae4' }
+  */
+
+  const roleId = req.params.roleId || null
+  if (!roleId) return res.status(400).json({ data: null, error: 'MISSING_ID' })
+
+  const { result, error } = await rolePermissionModel.getPermissionsByRole(roleId)
+  if (error) return res.status(500).json({ data: null, error })
+
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: result, error: null })
+}
+
+const getPermissionsByUser = async (req, res) => {
+  /*
+  *   #swagger.tags = ['Security - Permission']
+  *   #swagger.description = 'Get permissions by user petition'
+  *   #swagger.security = [{ "apiKeyAuth": [] }]
+  *   #swagger.parameters['userId'] = { in: 'path', description: 'Id of the user', required: true, type: 'string', default: '5f9f9f9f9f9f9f9f9f9f9f9f' }
+  */
+
+  const userId = req.params.userId || null
+  if (!userId) return res.status(400).json({ data: null, error: 'MISSING_ID' })
+
+  const { result, error } = await userPermissionModel.getPermissionsByUser(userId)
+  if (error) return res.status(500).json({ data: null, error })
+
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: result, error: null })
+}
+
+module.exports = { getAll, get, create, update, remove, addPermissionToRole, addPermissionToUser, getPermissionsByRole, getPermissionsByUser }

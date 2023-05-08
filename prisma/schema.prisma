@@ -10,8 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-//  id            Int         @id @default(autoincrement())
-
 model User {
   id            String      @id @default(uuid())
   createdAt     DateTime    @default(now())
@@ -72,14 +70,16 @@ model Permission {
 }
 
 model RolePermission {
-  id                String   @id @default(uuid())
   createdAt         DateTime @default(now())
   updatedAt         DateTime? @updatedAt
   role              Role    @relation("permissionRolePermission", fields: [roleId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  roleId            String
+  roleId            String  
   permission        Permission @relation("roleRolePermission", fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   permissionId      String
-  allowed           Boolean
+  allowed           Int      @default(0)
+
+  @@id([roleId, permissionId])
+  @@unique(fields: [roleId, permissionId], name: "rolePermissionIds")
 }
 
 model Module {
@@ -91,12 +91,14 @@ model Module {
 }
 
 model UserPermission {
-  id                String   @id @default(uuid())
   createdAt         DateTime @default(now())
   updatedAt         DateTime? @updatedAt
   user              User     @relation("userUserPermission", fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId            String
   permission        Permission @relation("userPermission", fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   permissionId      String
-  allowed           Boolean
+  allowed           Int      @default(0)
+
+  @@id([userId, permissionId])
+  @@unique(fields: [userId, permissionId], name: "userPermissionIds")
 }

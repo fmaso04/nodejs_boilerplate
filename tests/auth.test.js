@@ -120,7 +120,6 @@ describe(`MODULE: ${module}`, () => {
             .set('x-access-token', `${token}`)
             .expect(200)
             .end((err, res) => {
-              console.log(err)
               expect(res.body.data).toBeTruthy()
               resolve()
             })
