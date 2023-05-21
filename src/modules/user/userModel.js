@@ -29,7 +29,6 @@ const get = async (id) => {
 }
 
 const create = async (data) => {
-  data.password = await bcrypt.hash(data.password, 10)
   try {
     const user = await prisma.user.create({ data })
     if (!user) return { result: null, error: 'USER_NOT_CREATED' }
@@ -42,7 +41,6 @@ const create = async (data) => {
 }
 
 const createWithAvatar = async (data, avatar) => {
-  data.password = await bcrypt.hash(data.password, 10)
   try {
     const user = await prisma.user.create({ data })
     if (!user) return { result: null, error: 'USER_NOT_CREATED' }
@@ -117,6 +115,16 @@ const remove = async (id) => {
   }
 }
 
+const checkPassword = async (idUser, password) => {
+  const user = await prisma.user.findUnique({
+    where: { id: idUser }
+  })
+  if (!user) return { result: null, error: 'USER_NOT_FOUND' }
+  const validPassword = await bcrypt.compare(password, user.password)
+  if (!validPassword) return { result: null, error: 'INCORRECT_PASSWORD' }
+  return { result: user, error: null }
+}
+
 const login = async (email, password) => {
   const user = await prisma.user.findUnique({
     where: { email }
@@ -155,4 +163,19 @@ const existsUser = async (data) => {
   }
 }
 
-module.exports = { getAll, get, create, createWithAvatar, update, updateAvatar, remove, login, getByParams, existsUser }
+const updatePassword = async (id, password) => {
+  try {
+    const user = await prisma.user.update({
+      where: { id },
+      data: { password }
+    })
+    if (!user) return { result: null, error: 'USER_NOT_UPDATED' }
+    delete user.password
+    return { result: user, error: null }
+  } catch (err) {
+    console.error(err)
+    return { result: null, error: 'ERROR_UPDATING_USER' }
+  }
+}
+
+module.exports = { getAll, get, create, createWithAvatar, update, updateAvatar, remove, checkPassword, login, getByParams, existsUser, updatePassword }

@@ -140,7 +140,7 @@ const addPermissionToUser = async (req, res) => {
   *   #swagger.security = [{ "apiKeyAuth": [] }]
   *   #swagger.parameters['userId'] = { in: 'path', description: 'Id of the user', required: true, type: 'string', default: '5f9f9f9f9f9f9f9f9f9f9f9f' }
   *   #swagger.parameters['permissionId'] = { in: 'path', description: 'Id of the permission', required: true, type: 'string', default: '439dbdea-7297-48c0-83c8-6a4f38e436b3' }
-  *   #swagger.parameters['allowed'] = { in: 'formData', description: 'Allowed to use permission', required: false, type: 'boolean', default: true
+  *   #swagger.parameters['allowed'] = { in: 'formData', description: 'Allowed to use permission', required: false, type: 'boolean', default: true }
   */
 
   const data = req.body || {}

@@ -26,7 +26,11 @@ Security#ADD_PERMISSION_TO_ROLE#Add a permission to a role |  o    |     x     |
 Security#ADD_PERMISSION_TO_USER#Add a permission to a user |  o    |     x     |     x
 Security#GET_PERMISSIONS_BY_ROLE#List permissions by role  |  o    |     x     |     x
 Security#GET_PERMISSIONS_BY_USER#List permissions by user  |  o    |     x     |     x
-`
+Profile#GET_PROFILE#Get profile                            |  o    |     o     |     o
+Profile#GET_TOKEN_PROFILE#Get token                        |  o    |     o     |     o
+Profile#UPDATE_PROFILE#Update profile                      |  o    |     o     |     o
+Profile#UPDATE_PASSWORD_PROFILE#Update password            |  o    |     o     |     o
+Profile#UPDATE_AVATAR_PROFILE#Update avatar                |  o    |     o     |     o`
 
 const processRolePermissions = async () => {
   const lines = rolePermissions.split('\n')
@@ -36,8 +40,6 @@ const processRolePermissions = async () => {
     const [module, permissionCode, permissionDescription] = permission.split('#')
     return { module, permissionCode, permissionDescription, permissions: rest }
   })
-  console.log('roles', roles)
-  console.log('permissions', permissions)
   const rolesParsed = []
   for (const key in roles) {
     const role = roles[key]
@@ -49,8 +51,6 @@ const processRolePermissions = async () => {
 
     rolesParsed[key] = { name: role, id: roleRes.id }
   }
-
-  console.log('rolesParsed', rolesParsed)
 
   const modulesParsed = []
   for (const permission of permissions) {

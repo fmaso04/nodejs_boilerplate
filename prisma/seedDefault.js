@@ -52,6 +52,10 @@ const seedModules = async () => {
       {
         id: '589fe6b0-0519-4eb3-a055-2e34947e3d4a',
         name: 'Dashboard'
+      },
+      {
+        id: 'c2b0b0a0-0b0b-4b0b-8b0b-0b0b0b0b0b0b',
+        name: 'Profile'
       }
     ]
   })

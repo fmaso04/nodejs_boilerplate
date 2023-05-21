@@ -27,6 +27,22 @@ const doc = {
     {
       name: 'Playground',
       description: 'Petitions for testing your frontend'
+    },
+    {
+      name: 'Security - Module',
+      description: 'Security module petitions'
+    },
+    {
+      name: 'Security - Role',
+      description: 'Security module petitions'
+    },
+    {
+      name: 'Security - Permission',
+      description: 'Security module petitions'
+    },
+    {
+      name: 'Profile',
+      description: 'Profile petitions'
     }
   ],
   securityDefinitions: {

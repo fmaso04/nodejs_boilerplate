@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt')
+
 const userModel = require('./userModel')
 const validateParams = require('../../helpers/validateParams')
 const validateFile = require('../../helpers/validateFile')
@@ -53,9 +55,10 @@ const create = async (req, res) => {
   const { dataParsed, validationErrors } = await validateParams(data, userValidator)
   if (validationErrors) return res.status(400).json({ data: null, error: validationErrors })
 
+  dataParsed.password = await bcrypt.hash(dataParsed.password, 10)
+
   const { result, error } = await userModel.create(dataParsed)
   if (error) return res.status(500).json({ data: null, error })
-
   res.setHeader('Content-Type', 'application/json')
   return res.status(200).json({ data: result, error: null })
 }
@@ -88,6 +91,8 @@ const createWithAvatar = async (req, res) => {
   const errors = validationErrors || {}
   if (fileErrors && Object.keys(fileErrors).length > 0) errors.avatar = fileErrors
   if (errors && Object.keys(errors).length > 0) return res.status(400).json({ data: null, error: errors })
+
+  dataParsed.password = await bcrypt.hash(dataParsed.password, 10)
 
   const { result, error } = await userModel.createWithAvatar(dataParsed, file)
   if (error) return res.status(500).json({ data: null, error })

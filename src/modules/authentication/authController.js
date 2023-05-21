@@ -1,11 +1,17 @@
 const moment = require('moment/moment')
+const bcrypt = require('bcrypt')
 
 const userModel = require('../user/userModel')
 const tokenModel = require('../user/token/tokenModel')
 const validateParams = require('../../helpers/validateParams')
-const tokenConfig = require('../../../config/config').token
 const createToken = require('../../helpers/functions').createToken
 const { userValidator } = require('../user/userValidator')
+const mailer = require('../../helpers/sendEmail')
+const { emailValidator, passwordValidator } = require('../../helpers/defaultValidators')
+
+const serverConfig = require('../../../config/config').server
+const tokenConfig = require('../../../config/config').token
+const companyConfig = require('../../../config/config').company
 
 const login = async (req, res) => {
   /*
@@ -16,20 +22,20 @@ const login = async (req, res) => {
   *   #swagger.parameters['password'] = { in: 'formData', description: 'Password of the user', required: true, type: 'string', format: 'password', default: '12341234' }
   */
 
-  const loginResponse = await userModel.login(req.body.email, req.body.password)
-  if (loginResponse.error) return res.status(400).json({ error: loginResponse.error })
+  const loginResult = await userModel.login(req.body.email, req.body.password)
+  if (loginResult.error) return res.status(400).json({ error: loginResult.error })
 
-  const user = loginResponse.result
+  const user = loginResult.result
   const token = createToken(user.id)
-  const tokenResponse = await tokenModel.create({
+  const tokenResult = await tokenModel.create({
     token,
     name: 'login',
     expiration: moment(new Date()).add(tokenConfig.expirationToken, tokenConfig.expirationUnitLong).format(),
     userId: user.id
   })
 
-  if (tokenResponse.error) return res.status(400).json({ error: tokenResponse.error })
-  user.token = tokenResponse.result.token
+  if (tokenResult.error) return res.status(400).json({ error: tokenResult.error })
+  user.token = tokenResult.result.token
 
   res.setHeader('Content-Type', 'application/json')
   res.status(200).json({ data: user, error: null })
@@ -78,22 +84,117 @@ const register = async (req, res) => {
   const { dataParsed, validationErrors } = await validateParams(data, userValidator)
   if (validationErrors) return res.status(400).json({ error: validationErrors })
 
-  const userResponse = await userModel.create(dataParsed)
-  if (userResponse.error) return res.status(400).json({ error: userResponse.error })
-  const user = userResponse.result
+  dataParsed.password = await bcrypt.hash(dataParsed.password, 10)
+
+  const userResult = await userModel.create(dataParsed)
+  if (userResult.error) return res.status(400).json({ error: userResult.error })
+  const user = userResult.result
 
   const token = createToken(user.id)
-  const tokenResponse = await tokenModel.create({
+  const tokenResult = await tokenModel.create({
     token,
     name: 'register',
     expiration: moment(new Date()).add(tokenConfig.expirationToken, tokenConfig.expirationUnitLong).format(),
     userId: user.id
   })
-  if (tokenResponse.error) return res.status(400).json({ error: tokenResponse.error })
-  user.token = tokenResponse.result.token
+  if (tokenResult.error) return res.status(400).json({ error: tokenResult.error })
+  user.token = tokenResult.result.token
 
   res.setHeader('Content-Type', 'application/json')
   return res.status(200).json({ data: user, error: null })
 }
 
-module.exports = { login, fastRegister, longRegister }
+const recoverPassword = async (req, res) => {
+  /*
+  *   #swagger.tags = ['Authentication']
+  *   #swagger.description = 'Recover password'
+  *   #swagger.consumes = ['application/x-www-form-urlencoded']
+  *   #swagger.parameters['email'] = { in: 'path', description: 'Email of the user', required: true, default: 'test@ferranmaso.com' }
+  *
+  *   #swagger.responses[200] = { description: 'User found' }
+  *   #swagger.responses[400] = { description: 'User not found' }
+  *   #swagger.responses[500] = { description: 'Internal error' }
+  */
+
+  const { email } = req.params
+
+  const { dataParsed, validationErrors } = await validateParams({ email }, emailValidator)
+  if (validationErrors) return res.status(400).json({ error: validationErrors })
+
+  const userResult = await userModel.getByParams({ email: dataParsed.email })
+  if (userResult.error) return res.status(400).json({ error: userResult.error })
+
+  const user = userResult.result
+
+  const token = createToken(user.id)
+  const tokenResult = await tokenModel.create({
+    token,
+    name: 'recoverPassword',
+    expiration: moment(new Date()).add(tokenConfig.expirationRecoverEmailToken, tokenConfig.expirationRecoverEmailTokenUnit).format(),
+    userId: user.id
+  })
+
+  if (tokenResult.error) return res.status(400).json({ error: tokenResult.error })
+
+  const mailResult = await mailer.sendEmailFromTemplate({
+    to: user.email,
+    subject: 'Recover password',
+    template: 'emailRecoverPassword',
+    context: {
+      name: user.name,
+      url: `${serverConfig.frontendUrl}/recover-password/${token}`,
+      company: companyConfig
+    }
+  })
+
+  if (mailResult.error) return res.status(400).json({ error: mailResult.error })
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: 'EMAIL_SEND_CORRECT', error: null })
+}
+
+const recoverPasswordChange = async (req, res) => {
+  /*
+  *   #swagger.tags = ['Authentication']
+  *   #swagger.description = 'Recover password change using token provided by email'
+  *   #swagger.consumes = ['application/x-www-form-urlencoded']
+  *   #swagger.parameters['token'] = { in: 'path', description: 'Token of the user', required: true, default: '5f9f9f9f9f9f9f9f9f9f9f9f' }
+  *   #swagger.parameters['password'] = { in: 'formData', description: 'Password of the user', required: true, type: 'string', format: 'password', default: '123412341234' }
+  *   #swagger.parameters['passwordConfirmation'] = { in: 'formData', description: 'Password confirmation of the user', required: true, type: 'string', format: 'password', default: '12341234' }
+  *
+  *   #swagger.responses[200] = { description: 'User found' }
+  *   #swagger.responses[400] = { description: 'User not found' }
+  *   #swagger.responses[500] = { description: 'Internal error' }
+  */
+
+  const { token } = req.params
+  const { password } = req.body
+
+  const { dataParsed, validationErrors } = await validateParams({ password }, passwordValidator)
+  if (validationErrors) return res.status(400).json({ error: validationErrors })
+
+  const tokenResult = await tokenModel.getByParams({ token, name: 'recoverPassword' })
+  if (tokenResult.error) return res.status(400).json({ error: tokenResult.error })
+  const tokenData = tokenResult.result
+
+  if (!tokenData.active) return res.status(400).json({ error: 'TOKEN_NOT_ACTIVE' })
+  if (tokenData.expiration < moment().format('YYYY-MM-DD HH:mm:ss')) return res.status(401).json({ error: 'TOKEN_EXPIRED' })
+
+  const userResult = await userModel.getByParams({ id: tokenData.userId })
+  if (userResult.error) return res.status(400).json({ error: userResult.error })
+
+  const user = userResult.result
+  const passwordHash = await bcrypt.hash(dataParsed.password, 10)
+  const userUpdateResult = await userModel.update(user.id, { password: passwordHash })
+  if (userUpdateResult.error) return res.status(400).json({ error: userUpdateResult.error })
+
+  /* const tokenDeleteResult = await tokenModel.remove(tokenData.id)
+  if (tokenDeleteResult.error) return res.status(400).json({ error: tokenDeleteResult.error }) */
+
+  const tokenUpdateResult = await tokenModel.update(tokenData.id, { active: false })
+  if (tokenUpdateResult.error) return res.status(400).json({ error: tokenUpdateResult.error })
+
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: 'PASSWORD_CHANGED_CORRECT', error: null })
+}
+
+module.exports = { login, fastRegister, longRegister, recoverPassword, recoverPasswordChange }

@@ -130,5 +130,6 @@ module.exports = {
   createOrUpdate,
   remove,
   existsRolePermission,
-  checkRolePermission
+  checkRolePermission,
+  getRolePermissionByRoleId
 }
