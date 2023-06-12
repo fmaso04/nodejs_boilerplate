@@ -9,7 +9,6 @@ const getAll = async (req, res) => {
   /*
   *   #swagger.tags = ['User']
   *   #swagger.description = 'User get petition'
-  *   #swagger.security = [{ "apiKeyAuth": [] }]
   */
 
   const { result, error } = await userModel.getAll()

@@ -1,8 +1,11 @@
 const jwt = require('jsonwebtoken')
-const tokenModel = require('../modules/user/token/tokenModel')
 const moment = require('moment')
+
 const tokenConfig = require('../../config/config').token
 const authorizationTypes = require('../const/authorizationTypes')
+
+const userModel = require('../modules/user/userModel')
+const tokenModel = require('../modules/user/token/tokenModel')
 const permissionModel = require('../modules/security/permission/permissionModel')
 const rolePermissionModel = require('../modules/security/permission/rolePermissionModel')
 const userPermissionModel = require('../modules/security/permission/userPermissionModel')
@@ -21,6 +24,7 @@ module.exports = {
             error: 'AUTH_FAILED'
           })
         }
+
         console.log('verify token', `${tokenConfig.expirationToken}${tokenConfig.expirationUnit}`)
 
         jwt.verify(token, process.env.JWT_KEY, { algorithm: 'HS256' }, async (err, decoded) => {
@@ -35,6 +39,18 @@ module.exports = {
           if (error) return res.status(401).json({ error: 'AUTH_FAILED' })
           if (result.expiration < moment().format('YYYY-MM-DD HH:mm:ss')) return res.status(401).json({ error: 'TOKEN_EXPIRED' })
           if (!result.active) return res.status(401).json({ error: 'TOKEN_IS_NOT_ACTIVE' })
+
+          // Default case (no module and no permission) independently of the user activated, role and permissions
+          if (module === '' && permission === '') {
+            req.userData = decoded
+            return cb()
+          }
+
+          // Check if user is activated
+          const userResult = await userModel.get(result.userId)
+          if (userResult.error) return res.status(500).json({ data: null, error: userResult.error })
+          const user = userResult.result
+          if (!user.verified) return res.status(401).json({ error: 'USER_IS_NOT_VERIFIED' })
 
           // Get permission id by code
           const resultPermission = await permissionModel.getByCode(permission)

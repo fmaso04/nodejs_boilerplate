@@ -202,11 +202,15 @@ describe(`MODULE: ${module}`, () => {
             })
         })
 
+        console.log('id', id)
+        console.log('token', token)
+
         await new Promise((resolve, reject) => {
           request.delete(`/user/delete/${id}`)
             .set('x-access-token', `${token}`)
             .expect(200)
             .end((err, res) => {
+              console.log(res.body)
               expect(res.body.data).toBeTruthy()
               resolve()
             })

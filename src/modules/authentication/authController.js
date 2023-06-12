@@ -44,7 +44,7 @@ const login = async (req, res) => {
 const fastRegister = async (req, res) => {
   /*
   *   #swagger.tags = ['Authentication']
-  *   #swagger.description = 'Fast register for users'
+  *   #swagger.description = 'Fast register for users and sends verification email'
   *   #swagger.consumes = ['application/x-www-form-urlencoded']
   *   #swagger.parameters['email'] = { in: 'formData', description: 'Email of the user', required: true, default: 'fm@ferranmaso.com' }
   *   #swagger.parameters['password'] = { in: 'formData', description: 'Password of the user', required: true, type: 'string', format: 'password', default: '12341234' }
@@ -59,7 +59,7 @@ const fastRegister = async (req, res) => {
 const longRegister = async (req, res) => {
   /*
   *   #swagger.tags = ['Authentication']
-  *   #swagger.description = 'Fast register for users'
+  *   #swagger.description = 'Fast register for users and sends verification email'
   *   #swagger.consumes = ['application/x-www-form-urlencoded']
   *   #swagger.parameters['email'] = { in: 'formData', description: 'Email of the user', required: true, default: 'fm@ferranmaso.com' }
   *   #swagger.parameters['password'] = { in: 'formData', description: 'Password of the user', required: true, type: 'string', format: 'password', default: '12341234' }
@@ -93,12 +93,103 @@ const register = async (req, res) => {
   const token = createToken(user.id)
   const tokenResult = await tokenModel.create({
     token,
-    name: 'register',
+    name: 'emailVerification',
     expiration: moment(new Date()).add(tokenConfig.expirationToken, tokenConfig.expirationUnitLong).format(),
     userId: user.id
   })
   if (tokenResult.error) return res.status(400).json({ error: tokenResult.error })
   user.token = tokenResult.result.token
+
+  const mailResult = await sendVerifyMail(user)
+  if (mailResult.error) return res.status(400).json({ error: mailResult.error })
+
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: user, error: null })
+}
+
+const verifyEmail = async (req, res) => {
+/*
+  *   #swagger.tags = ['Authentication']
+  *   #swagger.description = 'Sends a verification email to the user, used if the email has not arrived'
+  *   #swagger.consumes = ['application/x-www-form-urlencoded']
+  *
+  *   #swagger.responses[200] = { description: 'User found' }
+  *   #swagger.responses[400] = { description: 'User not found' }
+  *   #swagger.responses[500] = { description: 'Internal error' }
+  */
+
+  const userId = req.userData.id || null
+  const userResult = await userModel.get(userId)
+  if (userResult.error) return res.status(400).json({ error: userResult.error })
+  const user = userResult.result
+
+  const mailResult = await sendVerifyMail(user)
+  if (mailResult.error) return res.status(400).json({ error: mailResult.error })
+
+  res.setHeader('Content-Type', 'application/json')
+  return res.status(200).json({ data: user, error: null })
+}
+
+const sendVerifyMail = async (user) => {
+  const token = createToken(user.id)
+  const tokenResult = await tokenModel.create({
+    token,
+    name: 'emailVerification',
+    expiration: moment(new Date()).add(tokenConfig.expirationRecoverEmailToken, tokenConfig.expirationRecoverEmailTokenUnit).format(),
+    userId: user.id
+  })
+
+  if (tokenResult.error) return { result: null, error: tokenResult.error }
+
+  const mailResult = await mailer.sendEmailFromTemplate({
+    to: user.email,
+    subject: 'Email verification',
+    template: 'emailVerification',
+    context: {
+      name: user.name,
+      url: `${serverConfig.frontendUrl}/email-verification/${token}`,
+      company: companyConfig
+    }
+  })
+
+  console.log(mailResult)
+
+  if (mailResult.error) return { result: null, error: mailResult.error }
+  return { result: tokenResult, error: null }
+}
+
+const verifyEmailToken = async (req, res) => {
+  /*
+  *   #swagger.tags = ['Authentication']
+  *   #swagger.description = 'Verify email by token'
+  *   #swagger.consumes = ['application/x-www-form-urlencoded']
+  *   #swagger.parameters['token'] = { in: 'path', description: 'Token to verify', required: true, default: '123456789' }
+  *
+  *   #swagger.responses[200] = { description: 'User found' }
+  *   #swagger.responses[400] = { description: 'User not found' }
+  *   #swagger.responses[500] = { description: 'Internal error' }
+  */
+
+  const { token } = req.params
+
+  const tokenResult = await tokenModel.getByParams({ token, name: 'emailVerification' })
+  if (tokenResult.error) return res.status(400).json({ error: tokenResult.error })
+  const tokenData = tokenResult.result
+
+  if (!tokenData.active) return res.status(400).json({ error: 'TOKEN_NOT_ACTIVE' })
+  if (tokenData.expiration < moment().format('YYYY-MM-DD HH:mm:ss')) return res.status(401).json({ error: 'TOKEN_EXPIRED' })
+
+  const userResult = await userModel.get(tokenData.userId)
+  if (userResult.error) return res.status(400).json({ error: userResult.error })
+  const user = userResult.result
+
+  const userUpdateResult = await userModel.update(user.id, { verified: true })
+  if (userUpdateResult.error) return res.status(400).json({ error: userUpdateResult.error })
+
+  const tokenUpdateResult = await tokenModel.update(tokenData.id, { active: false })
+  if (tokenUpdateResult.error) return res.status(400).json({ error: tokenUpdateResult.error })
+
+  user.verified = true
 
   res.setHeader('Content-Type', 'application/json')
   return res.status(200).json({ data: user, error: null })
@@ -197,4 +288,4 @@ const recoverPasswordChange = async (req, res) => {
   return res.status(200).json({ data: 'PASSWORD_CHANGED_CORRECT', error: null })
 }
 
-module.exports = { login, fastRegister, longRegister, recoverPassword, recoverPasswordChange }
+module.exports = { login, fastRegister, longRegister, verifyEmail, verifyEmailToken, recoverPassword, recoverPasswordChange }

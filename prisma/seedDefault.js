@@ -25,7 +25,8 @@ const seedUsers = async () => {
         email: 'admin@ferranmaso.com',
         password: await bcrypt.hash('12341234', 10),
         roleId: '50584c04-8d54-4fe0-bb25-93486c5aaaeb',
-        username: 'admin'
+        username: 'admin',
+        verified: true
       }
     ]
   })

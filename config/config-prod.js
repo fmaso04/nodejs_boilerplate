@@ -32,7 +32,10 @@ exports.email = {
   smtp: {
     host: 'smtp.test.com',
     port: 587,
-    secure: true
+    secure: true,
+    tls: {
+      ciphers: 'SSLv3'
+    }
   }
 }
 

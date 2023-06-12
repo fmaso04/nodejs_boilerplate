@@ -32,6 +32,7 @@ model User {
   roleId        String?
   tokens        Token[]     @relation("userToken")
   permissions   UserPermission[] @relation("userUserPermission")
+  verified      Boolean     @default(false)
 }
 
 model Token {
