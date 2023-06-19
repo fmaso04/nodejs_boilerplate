@@ -18,20 +18,38 @@ const seedRoles = async () => {
 
 const seedUsers = async () => {
   console.log('Seeding users...')
-  const res = await prisma.user.createMany({
-    data: [
-      {
-        name: 'Admin',
-        email: 'admin@ferranmaso.com',
-        password: await bcrypt.hash('12341234', 10),
-        roleId: '50584c04-8d54-4fe0-bb25-93486c5aaaeb',
-        username: 'admin',
-        verified: true
-      }
-    ]
+  const res = await prisma.user.create({
+    data: {
+      name: 'Admin',
+      email: 'admin@ferranmaso.com',
+      password: await bcrypt.hash('12341234', 10),
+      roleId: '50584c04-8d54-4fe0-bb25-93486c5aaaeb',
+      username: 'admin',
+      verified: true
+    }
   })
-  if (!res) console.error('Error seeding users', res)
-  console.log('Users seeded: ', res)
+
+  if (!res) console.error('Error seeding users')
+  console.log('User admin seeded')
+
+  const config = await prisma.userConfig.create({
+    data: {
+      userId: res.id,
+      theme: 'light',
+      language: 'cat-ES'
+    }
+  })
+
+  if (!config) console.error('Error seeding config')
+  console.log('Config seeded: ', config)
+
+  const user = await prisma.user.update({
+    where: { id: res.id },
+    data: { config: { connect: { id: config.id } } }
+  })
+
+  if (!user) console.error('Error updating user config id')
+  console.log('User updated: ', user)
 }
 
 const seedModules = async () => {

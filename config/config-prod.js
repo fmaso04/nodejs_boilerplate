@@ -5,7 +5,9 @@ exports.server = {
   hostname: 'localhost',
   protocol: 'http',
   externalUrl: 'localhost:3000',
-  uploadFolder: 'public/uploads/'
+  uploadFolder: 'public/uploads/',
+  frontendUrl: 'http://localhost:8080',
+  defaultLanguage: 'es-ES'
 }
 
 exports.token = {

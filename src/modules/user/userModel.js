@@ -17,7 +17,8 @@ const getAll = async () => {
 const get = async (id) => {
   try {
     const user = await prisma.user.findUnique({
-      where: { id }
+      where: { id },
+      include: { config: true, role: true }
     })
     if (!user) return { result: null, error: 'USER_NOT_FOUND' }
     delete user.password
@@ -139,7 +140,8 @@ const login = async (email, password) => {
 const getByParams = async (data) => {
   try {
     const user = await prisma.user.findUnique({
-      where: data
+      where: data,
+      include: { config: true, role: true }
     })
     if (!user) return { result: null, error: 'USER_NOT_FOUND' }
     delete user.password

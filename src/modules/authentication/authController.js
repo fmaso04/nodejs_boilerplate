@@ -141,18 +141,21 @@ const sendVerifyMail = async (user) => {
 
   if (tokenResult.error) return { result: null, error: tokenResult.error }
 
+  const defaultLanguage = serverConfig?.defaultLanguage ?? 'en-US'
+  const language = user.config?.language ?? defaultLanguage
+  const translations = require(`../../const/translations/${language}.json`).emailTemplates.verifyEmail
+
   const mailResult = await mailer.sendEmailFromTemplate({
     to: user.email,
-    subject: 'Email verification',
+    subject: translations.subject,
     template: 'emailVerification',
     context: {
       name: user.name,
       url: `${serverConfig.frontendUrl}/email-verification/${token}`,
-      company: companyConfig
+      company: companyConfig,
+      translations
     }
   })
-
-  console.log(mailResult)
 
   if (mailResult.error) return { result: null, error: mailResult.error }
   return { result: tokenResult, error: null }
@@ -227,14 +230,19 @@ const recoverPassword = async (req, res) => {
 
   if (tokenResult.error) return res.status(400).json({ error: tokenResult.error })
 
+  const defaultLanguage = serverConfig?.defaultLanguage ?? 'en-US'
+  const language = user.config?.language ?? defaultLanguage
+  const translations = require(`../../const/translations/${language}.json`).emailTemplates.verifyEmail
+
   const mailResult = await mailer.sendEmailFromTemplate({
     to: user.email,
-    subject: 'Recover password',
+    subject: translations.subject,
     template: 'emailRecoverPassword',
     context: {
       name: user.name,
       url: `${serverConfig.frontendUrl}/recover-password/${token}`,
-      company: companyConfig
+      company: companyConfig,
+      translations
     }
   })
 

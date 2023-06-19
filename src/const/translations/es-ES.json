@@ -1,0 +1,24 @@
+{
+  "header": "Bienvenido al nodejs boilerplate!",
+  "home": "Página principal",
+  "emailTemplates": {
+    "resetPassword": {
+      "subject": "Restablecer contraseña",
+      "TITLE": "Restablecer contraseña",
+      "ACTIVATE_ACCOUNT_BUTTON": "Restablecer contraseña",
+      "LINE_1": "Hola",
+      "LINE_2": "Recibimos una solicitud para restablecer la contraseña de tu cuenta. Haz clic en el siguiente enlace para restablecer tu contraseña:",
+      "LINE_3": "Si no solicitaste restablecer tu contraseña, ignora este correo electrónico.",
+      "LINE_4": "Gracias,"
+    },
+    "verifyEmail": {
+      "subject": "Verificación correo electrónico",
+      "TITLE": "Verifica tu dirección de correo electrónico",
+      "ACTIVATE_ACCOUNT_BUTTON": "Activar cuenta",
+      "LINE_1": "Hola",
+      "LINE_2": "Gracias por registrarte en nuestro servicio. Para completar tu registro, haz clic en el siguiente enlace para verificar tu dirección de correo electrónico:",
+      "LINE_3": "Si no te registraste, ignora este correo electrónico.",
+      "LINE_4": "Gracias,"
+    }
+  }
+}

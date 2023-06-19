@@ -20,7 +20,7 @@ model User {
   username      String      @unique
   conditions    Boolean?
   newsletter    Boolean?
-  bio           String?    @db.VarChar(1000)
+  bio           String?     @db.VarChar(1000)
   phone         String?
   avatar        String?
   birthday      DateTime?
@@ -33,6 +33,23 @@ model User {
   tokens        Token[]     @relation("userToken")
   permissions   UserPermission[] @relation("userUserPermission")
   verified      Boolean     @default(false)
+  config        UserConfig?   @relation("userConfig", fields: [configId], references: [id], onDelete: SetNull, onUpdate: SetNull)
+  configId      String? @unique
+}
+
+model UserConfig {
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime? @updatedAt
+  userId        String    @unique
+  user          User?     @relation("userConfig")
+  language      String    @default("en")
+  theme         String    @default("light")
+  currency      String    @default("USD")
+  timezone      String    @default("UTC")
+  dateFormat    String    @default("YYYY-MM-DD")
+  timeFormat    String    @default("HH:mm:ss")
+  numberFormat  String    @default("0,0.00")
 }
 
 model Token {

@@ -1,0 +1,24 @@
+{
+  "header": "Benvingut al nodejs boilerplate!",
+  "home": "Pàgina principal",
+  "emailTemplates": {
+    "resetPassword": {
+      "subject": "Restaurar la contrasenya",
+      "TITLE": "Restaura la contrasenya",
+      "ACTIVATE_ACCOUNT_BUTTON": "Restaurar contrasenya",
+      "LINE_1": "Hola",
+      "LINE_2": "Has sol·licitat restablir la teva contrasenya. Fes clic en el següent enllaç per restablir la teva contrasenya",
+      "LINE_3": "Si no has sol·licitat restablir la teva contrasenya, ignora aquest correu electrònic.",
+      "LINE_4": "Gràcies,"
+    },
+    "verifyEmail": {
+      "subject": "Verificació de correu electrònic",
+      "TITLE": "Verifica la direcció de correu electrònic",
+      "ACTIVATE_ACCOUNT_BUTTON": "Activar la compta",
+      "LINE_1": "Hola",
+      "LINE_2": "Gràcies per registrar-te en el nostre servei. Per completar el teu registre, fes clic en el següent enllaç per verificar la teva adreça de correu electrònic:",
+      "LINE_3": "Si no t'has registrat, ignora aquest correu electrònic.", 
+      "LINE_4": "Gràcies,"
+    }
+  }
+}
